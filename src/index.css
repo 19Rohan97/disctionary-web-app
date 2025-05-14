@@ -1,0 +1,134 @@
+@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lora:ital,wght@0,400..700;1,400..700&display=swap");
+
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-neutral-900: #050505;
+  --color-neutral-700: #1f1f1f;
+  --color-neutral-600: #2d2d2d;
+  --color-neutral-500: #3a3a3a;
+  --color-neutral-400: #757575;
+  --color-neutral-300: #e9e9e9;
+  --color-neutral-100: #f4f4f4;
+  --color-neutral-0: #ffffff;
+
+  --color-purple-900: #a445ed;
+
+  --color-red-900: #ff5252;
+
+  --text-hl: 64px;
+  --text-hm: 24px;
+  --text-hs: 20px;
+  --text-bm: 18px;
+  --text-bs: 14px;
+
+  --font-sans-serif: "Inter", sans-serif;
+  --font-serif: "Lora", sans-serif;
+  --font-mono: "Inconsolata", sans-serif;
+
+  --shadow-toggle-light: 0 0 0 2px #2d2d2d, 0 0 4px #2d2d2d;
+  --shadow-toggle-dark: 0 0 0 2px #2d2d2d, 0 0 4px #2d2d2d;
+  --shadow-dropdown: 0px 5px 30px 0px #0000001a;
+  --shadow-dropdown-dark: 0px 5px 30px 0px #a445ed;
+}
+
+@layer utilities {
+  body {
+    @apply text-bm leading-6 text-neutral-600 pt-6 p-6 md:pt-[58px] pb-[124px] lg:px-0 dark:bg-neutral-900;
+  }
+  body.sans-serif {
+    @apply font-sans-serif;
+  }
+  body.serif {
+    @apply font-serif;
+  }
+  body.mono {
+    @apply font-mono;
+  }
+
+  ::marker {
+    @apply text-purple-900;
+  }
+
+  .dark-toggle {
+    @apply flex items-center gap-5;
+
+    .switch {
+      @apply inline-block w-[40px] h-[20px] relative rounded-[30px] bg-neutral-400;
+      input {
+        @apply hidden;
+      }
+      .slider {
+        @apply absolute top-0 bottom-0 left-0 right-0 rounded-[30px] cursor-pointer border-4 border-transparent overflow-hidden transition-all duration-200 before:content-[""] before:absolute before:w-full before:h-full before:bg-neutral-0 before:rounded-[30px] before:-translate-x-[20px] before:transition-all before:duration-200;
+      }
+    }
+
+    input:checked + .slider:before {
+      @apply bg-neutral-0;
+      transform: translateX(40px);
+    }
+
+    .switch:has(input:checked) {
+      @apply bg-purple-900;
+    }
+  }
+
+  .audio {
+    @apply transition-all duration-300;
+    g {
+      @apply fill-purple-900;
+      circle {
+        @apply opacity-25 transition-all duration-300;
+      }
+      path {
+        @apply transition-all duration-300;
+      }
+    }
+
+    &:hover {
+      g {
+        @apply fill-purple-900;
+        circle {
+          @apply opacity-100;
+        }
+        path {
+          @apply fill-neutral-0;
+        }
+      }
+    }
+  }
+
+  .container {
+    @apply w-full max-w-[737px] mx-auto;
+  }
+
+  #header {
+    @apply flex items-center gap-5 justify-between;
+  }
+
+  .language-dropdown {
+    @apply cursor-pointer relative dark:text-neutral-0;
+    .selected-language {
+      @apply flex items-center gap-[18px] font-bold leading-[24px];
+    }
+    .other-languages {
+      @apply font-bold leading-[24px] flex flex-col items-start justify-start gap-[16px] p-6 shadow-dropdown dark:shadow-dropdown-dark min-w-[183px] rounded-[16px] absolute top-[45px] right-0 bg-neutral-0 dark:bg-neutral-700 z-50;
+    }
+    .option {
+      @apply hover:text-purple-900;
+    }
+  }
+
+  #results {
+    @apply flex flex-col gap-10;
+    .result {
+      @apply flex flex-col gap-10;
+    }
+
+    .example {
+      @apply block mt-3 text-neutral-400;
+    }
+  }
+}
