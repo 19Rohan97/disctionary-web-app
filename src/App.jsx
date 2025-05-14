@@ -1,9 +1,12 @@
+import { lazy, Suspense } from "react";
 import { useDictionary } from "./contexts/DictionaryContext";
 
 import Header from "./components/Header";
 import Search from "./components/Search";
-import NotFound from "./components/NotFound";
 import Results from "./components/Results";
+import SkeletonResult from "./components/SkeletonResult";
+
+const NotFound = lazy(() => import("./components/NotFound"));
 
 function App() {
   const { word, results, loading } = useDictionary();
@@ -16,13 +19,18 @@ function App() {
         <Search />
 
         <section className="container">
-          {loading && <p className="text-center mt-5">Loading...</p>}
+          {loading && <SkeletonResult />}
 
-          {word &&
-            !Array.isArray(results) &&
-            results.title === "No Definitions Found" && <NotFound />}
+          <Suspense fallback={<div>Loading...</div>}>
+            {!loading &&
+              word &&
+              !Array.isArray(results) &&
+              results.title === "No Definitions Found" && <NotFound />}
+          </Suspense>
 
-          {Array.isArray(results) && results.length > 0 && <Results />}
+          {!loading && Array.isArray(results) && results.length > 0 && (
+            <Results />
+          )}
         </section>
       </main>
     </>

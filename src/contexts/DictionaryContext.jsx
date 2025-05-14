@@ -1,4 +1,6 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+
+let debounceTimeout;
 
 const DictionaryContext = createContext();
 
@@ -19,18 +21,6 @@ function DictionaryProvider({ children }) {
       setError(true);
       setResults([]);
       return;
-    }
-
-    try {
-      setLoading(true);
-      setError(false);
-      const res = await fetch(`${BASE_API}${trimmed}`);
-      const data = await res.json();
-      setResults(data);
-    } catch (error) {
-      console.error(error.message);
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -79,27 +69,58 @@ function DictionaryProvider({ children }) {
     document.documentElement.classList.toggle("dark", savedDark);
   }, []);
 
+  useEffect(() => {
+    const trimmed = word.trim();
+    if (trimmed === "") {
+      setError(false);
+      setResults([]);
+      return;
+    }
+
+    setError(false);
+
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`${BASE_API}${trimmed}`);
+        const data = await res.json();
+        setResults(data);
+      } catch (err) {
+        console.error(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }, 500);
+
+    // Cleanup timeout on unmount
+    return () => clearTimeout(debounceTimeout);
+  }, [word]);
+
+  const contextValue = useMemo(
+    () => ({
+      word,
+      setWord,
+      results,
+      setResults,
+      loading,
+      error,
+      setError,
+      dropdown,
+      setDropdown,
+      selectedFont,
+      setSelectedFont,
+      handleSearch,
+      handleDropdown,
+      handleFont,
+      isDark,
+      toggleDarkMode,
+    }),
+    [word, results, loading, error, dropdown, selectedFont, isDark]
+  );
+
   return (
-    <DictionaryContext.Provider
-      value={{
-        word,
-        setWord,
-        results,
-        setResults,
-        loading,
-        error,
-        setError,
-        dropdown,
-        setDropdown,
-        selectedFont,
-        setSelectedFont,
-        isDark,
-        toggleDarkMode,
-        handleSearch,
-        handleDropdown,
-        handleFont,
-      }}
-    >
+    <DictionaryContext.Provider value={contextValue}>
       {children}
     </DictionaryContext.Provider>
   );
